@@ -1,18 +1,21 @@
 const zones = {
   "Pacific Time (PST/PDT)": "America/Los_Angeles",
   "IST (India)": "Asia/Kolkata",
-  "UTC (No DST)": "UTC",
-  "UK Time (GMT/BST)": "Europe/London"
+  "UTC": "UTC",
+  "UK Time": "Europe/London"
 };
 const fromSelect = document.getElementById("fromZone");
 const toSelect = document.getElementById("toZone");
 const result = document.getElementById("result");
+const themeToggle = document.getElementById("themeToggle");
+// Populate dropdowns
 Object.entries(zones).forEach(([label, value]) => {
   fromSelect.add(new Option(label, value));
   toSelect.add(new Option(label, value));
 });
 fromSelect.selectedIndex = 0;
 toSelect.selectedIndex = 1;
+// Time conversion (timezone-safe)
 function convertTime() {
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
@@ -24,26 +27,42 @@ function convertTime() {
   const toZone = toSelect.value;
   const [y, m, d] = date.split("-");
   const [h, min] = time.split(":");
-  const base = new Date(
+  const baseDate = new Date(
     new Date(Date.UTC(y, m - 1, d, h, min))
       .toLocaleString("en-US", { timeZone: fromZone })
   );
-  result.textContent = new Intl.DateTimeFormat("en-GB", {
+  const output = new Intl.DateTimeFormat("en-GB", {
     timeZone: toZone,
     dateStyle: "medium",
     timeStyle: "short"
-  }).format(base);
+  }).format(baseDate);
+  result.textContent = output;
 }
+// Auto convert
 document.querySelectorAll("input, select")
   .forEach(el => el.addEventListener("change", convertTime));
+// Swap zones
 document.getElementById("swapBtn").onclick = () => {
-  [fromSelect.selectedIndex, toSelect.selectedIndex] =
-  [toSelect.selectedIndex, fromSelect.selectedIndex];
+  const temp = fromSelect.selectedIndex;
+  fromSelect.selectedIndex = toSelect.selectedIndex;
+  toSelect.selectedIndex = temp;
   convertTime();
 };
+// Copy result
 document.getElementById("copyBtn").onclick = () => {
-  navigator.clipboard.writeText(result.textContent);
+  const text = result.textContent;
+  if (!text || text.includes("select")) return;
+  navigator.clipboard
+    ? navigator.clipboard.writeText(text)
+    : alert("Clipboard not supported");
 };
-document.getElementById("darkToggle").onclick = () => {
+// Dark mode toggle
+themeToggle.onclick = () => {
   document.body.classList.toggle("dark");
+  themeToggle.textContent =
+    document.body.classList.contains("dark") ? ":sunny:" : ":crescent_moon:";
 };
+
+
+
+
