@@ -46,3 +46,9 @@ input, select {
   font-weight: 600;
   text-align: center;
 }
+input[type="date"],
+input[type="time"] {
+  padding-left: 8px;
+  padding-right: 8px;
+  box-sizing: border-box;
+}
