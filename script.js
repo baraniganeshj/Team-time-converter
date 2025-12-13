@@ -1,40 +1,49 @@
 const zones = {
-  "PACIFIC TIME (US)": "America/Los_Angeles",
-  "IST": "Asia/Kolkata",
-  "UTC": "UTC",
-  "GMT": "Europe/London"
+  "Pacific Time (PST/PDT)": "America/Los_Angeles",
+  "IST (India)": "Asia/Kolkata",
+  "UTC (No DST)": "UTC",
+  "UK Time (GMT/BST)": "Europe/London"
 };
 const fromSelect = document.getElementById("fromZone");
 const toSelect = document.getElementById("toZone");
 const result = document.getElementById("result");
-Object.keys(zones).forEach(zone => {
-  fromSelect.add(new Option(zone, zones[zone]));
-  toSelect.add(new Option(zone, zones[zone]));
+Object.entries(zones).forEach(([label, value]) => {
+  fromSelect.add(new Option(label, value));
+  toSelect.add(new Option(label, value));
 });
 fromSelect.selectedIndex = 0;
 toSelect.selectedIndex = 1;
 function convertTime() {
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
-  if (!date || !time) return;
+  if (!date || !time) {
+    result.textContent = "Please select date and time";
+    return;
+  }
   const fromZone = fromSelect.value;
   const toZone = toSelect.value;
-  // Create a UTC-based timestamp from the input components
-  const [year, month, day] = date.split("-");
-  const [hour, minute] = time.split(":");
-  // Step 1: Treat input as time in FROM timezone
-  const fromDate = new Date(
-    new Date(Date.UTC(year, month - 1, day, hour, minute))
+  const [y, m, d] = date.split("-");
+  const [h, min] = time.split(":");
+  const base = new Date(
+    new Date(Date.UTC(y, m - 1, d, h, min))
       .toLocaleString("en-US", { timeZone: fromZone })
   );
-  // Step 2: Convert to TO timezone
-  const output = new Intl.DateTimeFormat("en-GB", {
+  result.textContent = new Intl.DateTimeFormat("en-GB", {
     timeZone: toZone,
     dateStyle: "medium",
     timeStyle: "short"
-  }).format(fromDate);
-  result.textContent = output;
+  }).format(base);
 }
-document.querySelectorAll("input, select").forEach(el =>
-  el.addEventListener("change", convertTime)
-);
+document.querySelectorAll("input, select")
+  .forEach(el => el.addEventListener("change", convertTime));
+document.getElementById("swapBtn").onclick = () => {
+  [fromSelect.selectedIndex, toSelect.selectedIndex] =
+  [toSelect.selectedIndex, fromSelect.selectedIndex];
+  convertTime();
+};
+document.getElementById("copyBtn").onclick = () => {
+  navigator.clipboard.writeText(result.textContent);
+};
+document.getElementById("darkToggle").onclick = () => {
+  document.body.classList.toggle("dark");
+};
