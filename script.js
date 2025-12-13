@@ -38,3 +38,10 @@ function convertTime() {
 document.querySelectorAll("input, select").forEach(el =>
   el.addEventListener("change", convertTime)
 );
+// Force picker to open on click (most browsers)
+document.getElementById("date").addEventListener("click", function () {
+  this.showPicker && this.showPicker();
+});
+document.getElementById("time").addEventListener("click", function () {
+  this.showPicker && this.showPicker();
+});
