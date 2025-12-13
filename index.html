@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Time Zone Converter</title>
+  <title>Team Time Converter</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <div class="header">
       <h1>Time Zone Converter</h1>
-      <button id="themeToggle" title="Toggle dark mode">:crescent_moon:</button>
+      <button id="darkToggle">:crescent_moon:</button>
     </div>
     <p class="subtitle">Internal team utility</p>
     <div class="card">
@@ -19,27 +19,23 @@
       <input type="time" id="time">
       <label>From</label>
       <select id="fromZone"></select>
-      <div class="swap-container">
-        <button id="swapBtn">⇅ Swap</button>
-      </div>
       <label>To</label>
       <select id="toZone"></select>
+      <div class="actions">
+        <button id="swapBtn">⇄ Swap</button>
+        <button id="copyBtn">:clipboard: Copy</button>
+      </div>
       <div class="result" id="result">
         Please select date and time
       </div>
-      <button id="copyBtn" class="copy-btn">Copy</button>
       <div class="hint">
         Date may change based on timezone difference
       </div>
     </div>
+    <footer>
+      DST handled automatically · Independent of system timezone
+    </footer>
   </div>
   <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
