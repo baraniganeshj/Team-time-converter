@@ -45,3 +45,16 @@ document.getElementById("date").addEventListener("click", function () {
 document.getElementById("time").addEventListener("click", function () {
   this.showPicker && this.showPicker();
 });
+function openPicker(el) {
+  if (el.showPicker) {
+    el.showPicker(); // Chrome, Edge
+  } else {
+    el.focus(); // Safari fallback
+  }
+}
+document.getElementById("date").addEventListener("click", function () {
+  openPicker(this);
+});
+document.getElementById("time").addEventListener("click", function () {
+  openPicker(this);
+});
