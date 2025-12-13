@@ -7,7 +7,6 @@ const zones = {
 const fromSelect = document.getElementById("fromZone");
 const toSelect = document.getElementById("toZone");
 const result = document.getElementById("result");
-// Populate dropdowns
 Object.keys(zones).forEach(zone => {
   fromSelect.add(new Option(zone, zones[zone]));
   toSelect.add(new Option(zone, zones[zone]));
@@ -20,13 +19,15 @@ function convertTime() {
   if (!date || !time) return;
   const fromZone = fromSelect.value;
   const toZone = toSelect.value;
+  // Create a UTC-based timestamp from the input components
   const [year, month, day] = date.split("-");
   const [hour, minute] = time.split(":");
-  // Treat input as FROM timezone, not local machine timezone
+  // Step 1: Treat input as time in FROM timezone
   const fromDate = new Date(
     new Date(Date.UTC(year, month - 1, day, hour, minute))
       .toLocaleString("en-US", { timeZone: fromZone })
   );
+  // Step 2: Convert to TO timezone
   const output = new Intl.DateTimeFormat("en-GB", {
     timeZone: toZone,
     dateStyle: "medium",
@@ -34,6 +35,6 @@ function convertTime() {
   }).format(fromDate);
   result.textContent = output;
 }
-// Auto convert
-document.querySelectorAll("input, select")
-  .forEach(el => el.addEventListener("change", convertTime));
+document.querySelectorAll("input, select").forEach(el =>
+  el.addEventListener("change", convertTime)
+);
