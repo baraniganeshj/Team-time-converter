@@ -1,19 +1,6 @@
-:root {
-  --bg: #f4f6f8;
-  --card: #ffffff;
-  --text: #000;
-  --subtext: #666;
-}
-body.dark {
-  --bg: #121212;
-  --card: #1e1e1e;
-  --text: #fff;
-  --subtext: #aaa;
-}
 body {
   font-family: system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  background: #f4f6f8;
   display: flex;
   justify-content: center;
   padding: 40px;
@@ -22,25 +9,25 @@ body {
   width: 100%;
   max-width: 420px;
 }
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+h1 {
+  text-align: center;
+  margin-bottom: 4px;
 }
 .subtitle {
   text-align: center;
-  color: var(--subtext);
+  color: #666;
   margin-bottom: 20px;
 }
 .card {
-  background: var(--card);
+  background: white;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 label {
-  margin-top: 12px;
   display: block;
+  margin-top: 12px;
+  font-size: 14px;
 }
 input, select {
   width: 100%;
@@ -49,42 +36,11 @@ input, select {
   border-radius: 6px;
   border: 1px solid #ccc;
 }
-.actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 14px;
-}
-.actions button {
-  flex: 1;
-  padding: 8px;
-  cursor: pointer;
-}
 .result {
-  margin-top: 16px;
+  margin-top: 20px;
   padding: 12px;
   background: #eef2f7;
   border-radius: 8px;
-  text-align: center;
   font-weight: 600;
-}
-body.dark .result {
-  background: #2a2a2a;
-}
-.hint {
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--subtext);
   text-align: center;
-}
-footer {
-  margin-top: 16px;
-  font-size: 12px;
-  text-align: center;
-  color: var(--subtext);
-}
-#darkToggle {
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-size: 18px;
 }
