@@ -1,4 +1,4 @@
-/* --- Root Variables for Theming (UNCHANGED) --- */
+/* --- Root Variables for Theming --- */
 :root {
   --color-bg-primary: #1e1e2f;
   --color-bg-secondary: #27293d;
@@ -8,8 +8,10 @@
   --color-border: #3c3f56;
   --shadow-main: 0 10px 30px rgba(0, 0, 0, 0.5);
   --color-us-accent: #00bcd4;
+  --color-light-input-bg: #fcfcfc; /* Consistent light background for inputs */
+  --color-dark-input-text: #212121; /* Consistent dark text for inputs */
 }
-/* --- LIGHT MODE Variables (UNCHANGED) --- */
+/* --- LIGHT MODE Variables --- */
 body.light-mode {
   --color-bg-primary: #f4f6f8;
   --color-bg-secondary: #ffffff;
@@ -19,8 +21,10 @@ body.light-mode {
   --color-border: #e0e0e0;
   --shadow-main: 0 8px 24px rgba(0, 0, 0, 0.1);
   --color-us-accent: #03a9f4;
+  --color-light-input-bg: #ffffff;
+  --color-dark-input-text: #212121;
 }
-/* --- Global Styles (UNCHANGED) --- */
+/* --- Global Styles --- */
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--color-bg-primary);
@@ -38,7 +42,7 @@ body {
   width: 100%;
   max-width: 1200px;
 }
-/* --- Main Layout: Side-by-Side Columns (UNCHANGED) --- */
+/* --- Main Layout: Side-by-Side Columns --- */
 .main-content-wrapper {
     display: flex;
     gap: 30px;
@@ -48,7 +52,62 @@ body {
     flex: 1;
     min-width: 450px;
 }
-/* ... (Header, Card, Input Styles, Contrast Box Fixes UNCHANGED) ... */
+/* ... (Unchanged styles for header, titles, theme-toggle) ... */
+/* --- Card & Input Styles --- */
+.card {
+  background: var(--color-bg-secondary);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-main);
+  border: 1px solid var(--color-border);
+  transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+/* --- CRITICAL FIX: White Input Box Background --- */
+.input-contrast-box {
+    padding: 10px;
+    border-radius: 8px;
+    background-color: var(--color-light-input-bg); /* Force light background */
+    border: 1px solid #e0e0e0; /* Light border around the box */
+    transition: background-color 0.3s;
+}
+.input-contrast-box label {
+    color: var(--color-text-secondary);
+}
+/* --- CRITICAL FIX: Input Field Styling --- */
+.input-field {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc; /* Light border for the inner input element */
+  background-color: white; /* Ensure inner background is always white */
+  color: var(--color-dark-input-text); /* Ensure inner text is always dark */
+  font-size: 1rem;
+  box-sizing: border-box;
+  /* Aggressive fixes for native input text color: */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+/* Ensure placeholder text is visible */
+.input-field::placeholder {
+    color: #999;
+}
+/* Ensure selected text in select/picker is dark */
+.input-contrast-box select.input-field {
+    color: var(--color-dark-input-text);
+}
+/* --- Aggressive Fix for Native Date/Time Picker Text --- */
+/* Targetting the actual content of the input field */
+.input-field[type="datetime-local"],
+.input-field[type="time"],
+.input-field[type="date"] {
+    color: var(--color-dark-input-text) !important;
+}
+/* Fix for the calendar icon and date/time arrows in Chrome/Edge */
+.input-field[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(0); /* Ensure icon is black/dark */
+}
+/* ... (Remaining styles for result-box, time-lg, footer, media queries UNCHANGED) ... */
 /* --- Media Queries (UNCHANGED) --- */
 @media (max-width: 960px) {
   .main-content-wrapper {
@@ -60,11 +119,3 @@ body {
     width: 100%;
   }
 }
-/* ... (other mobile styles UNCHANGED) ... */
-
-
-
-
-
-
-
