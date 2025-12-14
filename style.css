@@ -1,48 +1,197 @@
+/* Variables for easy theme switching */
+:root {
+  --color-bg-primary: #1e1e2f;
+  --color-bg-secondary: #27293d;
+  --color-text-primary: #e6e6fa;
+  --color-text-secondary: #a8a8c0;
+  --color-accent: #6c63ff; /* Purple/Blue */
+  --color-border: #3c3f56;
+  --shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f4f6f8;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
   display: flex;
   justify-content: center;
-  padding: 40px;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 60px 20px;
+  margin: 0;
+  line-height: 1.6;
 }
 .container {
   width: 100%;
-  max-width: 420px;
+  max-width: 500px; /* Wider card for better input/output display */
+}
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: 8px;
 }
 h1 {
-  text-align: center;
-  margin-bottom: 4px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
 }
 .subtitle {
-  text-align: center;
-  color: #666;
-  margin-bottom: 20px;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin-top: 5px;
 }
 .card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  background: var(--color-bg-secondary);
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-dark);
+  border: 1px solid var(--color-border);
 }
 label {
   display: block;
-  margin-top: 12px;
-  font-size: 14px;
-  color: #333;
-}
-input, select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-.result {
-  margin-top: 20px;
-  padding: 12px;
-  background: #eef2f7;
-  border-radius: 8px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
   font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.input-group-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.input-col {
+  flex: 1;
+}
+.input-field {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box; /* Important for width calculation */
+}
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.3);
+}
+/* --- Result Box UI/UX --- */
+.result-box {
+  background-color: var(--color-bg-primary);
+  padding: 25px;
+  border-radius: 12px;
+  border-left: 5px solid var(--color-accent);
+  position: relative;
+}
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.result-header .icon {
+  font-size: 1.2rem;
+}
+.result-header .label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.result-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.time-lg {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+.date-sm {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+  text-align: right;
+}
+.zone-display {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Align elements to the right */
+  margin-top: 15px;
+}
+.zone-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-right: 10px;
+}
+.to-zone-select {
+  /* Hide the default To Zone select and use a button/label instead in a real app,
+     but for functionality, we'll keep it stylized here. */
+  appearance: none; /* Remove default select styling */
+  background-color: var(--color-accent);
+  color: white;
+  padding: 6px 15px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  max-width: 150px;
+}
+/* Current Times Display (Bonus feature) */
+.footer-links {
+  margin-top: 25px;
   text-align: center;
+  font-size: 0.8rem;
+}
+#currentTimes {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 15px;
+  background-color: var(--color-bg-secondary);
+  border-radius: 8px;
+}
+.current-time-item {
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.current-time-value {
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-size: 1.1rem;
+}
+/* Media Query for smaller screens */
+@media (max-width: 600px) {
+  .input-group-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .result-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .time-lg {
+    font-size: 2.5rem;
+  }
+  .date-sm {
+    text-align: left;
+    margin-top: -10px;
+  }
+  #currentTimes {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
 }
