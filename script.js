@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Standard Global Zones
+    // --- ZONE DEFINITIONS ---
     const globalZones = {
         "PST / PDT (Los Angeles)": "America/Los_Angeles",
         "EST / EDT (New York)": "America/New_York",
@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
         "UTC (Coordinated Universal Time)": "UTC",
         "GMT (London)": "Europe/London",
     };
-    // Detailed US Zones for the new feature
     const usZones = {
         "Eastern Time (ET) - New York": "America/New_York",
         "Central Time (CT) - Chicago": "America/Chicago",
@@ -16,22 +15,28 @@ document.addEventListener('DOMContentLoaded', () => {
         "Alaska Time (AKT) - Anchorage": "America/Anchorage",
         "Hawaii Time (HT) - Honolulu": "Pacific/Honolulu",
     };
-    // Global Converter Elements
-    const fromSelect = document.getElementById("fromZone");
-    const toSelect = document.getElementById("toZone");
-    const dateTimeInput = document.getElementById("dateTimeInput");
-    const convertedTime = document.getElementById("convertedTime");
-    const convertedDate = document.getElementById("convertedDate");
-    const toZoneDisplay = document.getElementById("toZoneDisplay");
+    // --- ELEMENT REFERENCES ---
     const currentTimesDiv = document.getElementById("currentTimes");
     const themeToggle = document.getElementById("themeToggle");
     const body = document.body;
-    // US Converter Elements
-    const usFromSelect = document.getElementById("usFromZone");
-    const usToSelect = document.getElementById("usToZone");
-    const usConvertedTime = document.getElementById("usConvertedTime");
-    const usConvertedDate = document.getElementById("usConvertedDate");
-    // --- Theme Switcher Logic (UNCHANGED) ---
+    // Global Converter Elements
+    const global = {
+        fromSelect: document.getElementById("fromZone"),
+        toSelect: document.getElementById("toZone"),
+        dateTimeInput: document.getElementById("dateTimeInput"),
+        convertedTime: document.getElementById("convertedTime"),
+        convertedDate: document.getElementById("convertedDate"),
+        toZoneDisplay: document.getElementById("toZoneDisplay")
+    };
+    // US Converter Elements (Now fully separate)
+    const us = {
+        fromSelect: document.getElementById("usFromZone"),
+        toSelect: document.getElementById("usToZone"),
+        dateTimeInput: document.getElementById("usDateTimeInput"), // NEW DEDICATED INPUT
+        convertedTime: document.getElementById("usConvertedTime"),
+        convertedDate: document.getElementById("usConvertedDate")
+    };
+    // --- THEME SWITCHER LOGIC (UNCHANGED) ---
     function enableDarkMode() {
         body.classList.add('dark-mode');
         body.classList.remove('light-mode');
@@ -55,33 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
             enableDarkMode();
         }
     }
-    themeToggle.addEventListener('click', () => {
-        if (body.classList.contains('dark-mode')) {
-            enableLightMode();
-        } else {
-            enableDarkMode();
-        }
-    });
-    // --- 1. Populate Selects ---
-    Object.keys(globalZones).forEach(zoneName => {
-        const timeZoneValue = globalZones[zoneName];
-        fromSelect.add(new Option(zoneName, timeZoneValue));
-        toSelect.add(new Option(zoneName, timeZoneValue));
-    });
-    // Populate US Selects
-    Object.keys(usZones).forEach(zoneName => {
-        const timeZoneValue = usZones[zoneName];
-        usFromSelect.add(new Option(zoneName, timeZoneValue));
-        usToSelect.add(new Option(zoneName, timeZoneValue));
-    });
-    // Set US converter defaults
-    usFromSelect.value = usZones["Eastern Time (ET) - New York"];
-    usToSelect.value = usZones["Pacific Time (PT) - Los Angeles"];
-    // --- 2. Set Global Initial Values & Defaults ---
-    fromSelect.value = globalZones["PST / PDT (Los Angeles)"];
-    toSelect.value = globalZones["IST (Chennai)"];
-    const now = new Date();
-    const initialFromZone = fromSelect.value;
+    // --- UTILITY: Date Formatting ---
+    // Helper function to format date for input[type="datetime-local"]
     function formatToLocalInput(date, timeZone) {
         const year = new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: timeZone }).format(date);
         const month = new Intl.DateTimeFormat('en', { month: '2-digit', timeZone: timeZone }).format(date);
@@ -90,14 +70,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const minute = new Intl.DateTimeFormat('en', { minute: '2-digit', timeZone: timeZone }).format(date);
         return `${year}-${month}-${day}T${hour}:${minute}`;
     }
-    dateTimeInput.value = formatToLocalInput(now, initialFromZone);
-    // --- 3. Core Conversion Logic (Reusable) ---
+    // --- CORE CONVERSION LOGIC (Reusable) ---
     function performConversion(dateTimeLocal, fromZone, toZone, timeOutputEl, dateOutputEl) {
-        if (!dateTimeLocal) return;
+        if (!dateTimeLocal) {
+             timeOutputEl.textContent = "--:--";
+             dateOutputEl.textContent = "Select date/time";
+             return;
+        }
         const parts = dateTimeLocal.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
         if (!parts) return;
         const [_, year, month, day, hour, minute] = parts.map(Number);
         const fromDateString = `${month}/${day}/${year} ${hour}:${minute}:00`;
+        // Create the absolute moment in time (UTC epoch) anchored to the FROM zone
         const fromDate = new Date(
             new Date(fromDateString).toLocaleString("en-US", { timeZone: fromZone })
         );
@@ -112,30 +96,69 @@ document.addEventListener('DOMContentLoaded', () => {
         timeOutputEl.textContent = timeFormatter.format(fromDate);
         dateOutputEl.textContent = dateFormatter.format(fromDate);
     }
-    // Global Converter Function
-    function convertTime() {
-        // Update the visual zone name
-        const selectedToOption = toSelect.options[toSelect.selectedIndex].text;
-        toZoneDisplay.textContent = selectedToOption.replace(/\s*\(.*\)/, '');
-        performConversion(
-            dateTimeInput.value,
-            fromSelect.value,
-            toSelect.value,
-            convertedTime,
-            convertedDate
+    // --- GLOBAL CONVERTER MODULE ---
+    function initializeGlobalConverter() {
+        // 1. Populate Selects
+        Object.keys(globalZones).forEach(zoneName => {
+            const timeZoneValue = globalZones[zoneName];
+            global.fromSelect.add(new Option(zoneName, timeZoneValue));
+            global.toSelect.add(new Option(zoneName, timeZoneValue));
+        });
+        // 2. Set Initial Values & Date
+        global.fromSelect.value = globalZones["PST / PDT (Los Angeles)"];
+        global.toSelect.value = globalZones["IST (Chennai)"];
+        const now = new Date();
+        global.dateTimeInput.value = formatToLocalInput(now, global.fromSelect.value);
+        // 3. Conversion Function
+        function convertGlobalTime() {
+            const selectedToOption = global.toSelect.options[global.toSelect.selectedIndex].text;
+            global.toZoneDisplay.textContent = selectedToOption.replace(/\s*\(.*\)/, '');
+            performConversion(
+                global.dateTimeInput.value,
+                global.fromSelect.value,
+                global.toSelect.value,
+                global.convertedTime,
+                global.convertedDate
+            );
+        }
+        // 4. Event Listeners
+        document.querySelectorAll("#dateTimeInput, #fromZone, #toZone").forEach(el =>
+            el.addEventListener("change", convertGlobalTime)
         );
+        return convertGlobalTime; // Return the function for initial execution
     }
-    // US Converter Function (Uses Global Input Time)
-    function convertUSTime() {
-        performConversion(
-            dateTimeInput.value, // Use the same input time as the global converter
-            usFromSelect.value,
-            usToSelect.value,
-            usConvertedTime,
-            usConvertedDate
+    // --- US CONVERTER MODULE (FULLY INDEPENDENT) ---
+    function initializeUSConverter() {
+        // 1. Populate Selects
+        Object.keys(usZones).forEach(zoneName => {
+            const timeZoneValue = usZones[zoneName];
+            us.fromSelect.add(new Option(zoneName, timeZoneValue));
+            us.toSelect.add(new Option(zoneName, timeZoneValue));
+        });
+        // 2. Set Initial Values & Date
+        us.fromSelect.value = usZones["Eastern Time (ET) - New York"];
+        us.toSelect.value = usZones["Pacific Time (PT) - Los Angeles"];
+        const now = new Date();
+        // Uses the US 'From' zone to initialize its independent date picker
+        us.dateTimeInput.value = formatToLocalInput(now, us.fromSelect.value);
+        // 3. Conversion Function
+        function convertUSTime() {
+            // Note: Does NOT rely on global.dateTimeInput
+            performConversion(
+                us.dateTimeInput.value,
+                us.fromSelect.value,
+                us.toSelect.value,
+                us.convertedTime,
+                us.convertedDate
+            );
+        }
+        // 4. Event Listeners
+        document.querySelectorAll("#usDateTimeInput, #usFromZone, #usToZone").forEach(el =>
+            el.addEventListener("change", convertUSTime)
         );
+        return convertUSTime; // Return the function for initial execution
     }
-    // --- 4. Current Time Display (Live Tickers) ---
+    // --- LIVE TICKER (UNCHANGED) ---
     function updateCurrentTimes() {
         const zonesToShow = {
             "PST": globalZones["PST / PDT (Los Angeles)"],
@@ -159,28 +182,19 @@ document.addEventListener('DOMContentLoaded', () => {
             currentTimesDiv.appendChild(item);
         });
     }
-    // --- 5. Event Listeners and Initialization ---
-    document.querySelectorAll(".input-field, .to-zone-select").forEach(el =>
-        el.addEventListener("change", () => {
-            convertTime();
-            convertUSTime(); // Run US conversion when global inputs change
-        })
-    );
-    // US specific listeners
-    document.querySelectorAll("#usFromZone, #usToZone").forEach(el =>
-        el.addEventListener("change", convertUSTime)
-    );
-    // Initialize
+    // --- INITIALIZATION ---
     initializeTheme();
-    convertTime();
-    convertUSTime(); // Run initial US conversion
+    themeToggle.addEventListener('click', () => {
+        if (body.classList.contains('dark-mode')) {
+            enableLightMode();
+        } else {
+            enableDarkMode();
+        }
+    });
+    const runGlobal = initializeGlobalConverter();
+    const runUS = initializeUSConverter();
+    runGlobal();
+    runUS();
     updateCurrentTimes();
     setInterval(updateCurrentTimes, 1000);
 });
-
-
-
-
-
-
-
