@@ -17,69 +17,74 @@
       <h1>Global Time Converter</h1>
       <p class="subtitle">Convert any date and time between your key zones instantly</p>
     </header>
-    <div class="card">
-      <div class="input-group-row">
-        <div class="input-col input-contrast-box">
-          <label for="dateTimeInput">Start Date & Time</label>
-          <input type="datetime-local" id="dateTimeInput" class="input-field">
-        </div>
-        <div class="input-col input-contrast-box">
-          <label for="fromZone">From Time Zone</label>
-          <select id="fromZone" class="input-field"></select>
-        </div>
+    <div class="main-content-wrapper">
+      <div class="converter-column global-converter-column">
+          <h2 class="column-title">World Zone Conversion</h2>
+          <div class="card">
+              <div class="input-group-row">
+                <div class="input-col input-contrast-box">
+                  <label for="dateTimeInput">Start Date & Time (Global)</label>
+                  <input type="datetime-local" id="dateTimeInput" class="input-field">
+                </div>
+                <div class="input-col input-contrast-box">
+                  <label for="fromZone">From Time Zone</label>
+                  <select id="fromZone" class="input-field"></select>
+                </div>
+              </div>
+              <div class="result-box">
+                <div class="result-header">
+                  <span class="icon">•</span>
+                  <span class="label">Converted Time (To Zone)</span>
+                </div>
+                <div class="result-main">
+                  <span id="convertedTime" class="time-lg">--:--</span>
+                  <span id="convertedDate" class="date-sm">Select input above</span>
+                </div>
+                <div class="zone-display">
+                  <span id="toZoneDisplay" class="zone-name">Target Zone</span>
+                  <select id="toZone" class="to-zone-select"></select>
+                </div>
+              </div>
+          </div>
       </div>
-      <div class="result-box">
-        <div class="result-header">
-          <span class="icon">•</span>
-          <span class="label">Converted Time (To Zone)</span>
-        </div>
-        <div class="result-main">
-          <span id="convertedTime" class="time-lg">--:--</span>
-          <span id="convertedDate" class="date-sm">Select input above</span>
-        </div>
-        <div class="zone-display">
-          <span id="toZoneDisplay" class="zone-name">Target Zone</span>
-          <select id="toZone" class="to-zone-select"></select>
-        </div>
+      <div class="converter-column us-converter-column">
+          <h2 class="column-title">United States Time Converter</h2>
+          <div class="card">
+              <div class="input-group-row">
+                <div class="input-col input-contrast-box">
+                    <label for="usDateTimeInput">Start Date & Time (US)</label>
+                    <input type="datetime-local" id="usDateTimeInput" class="input-field">
+                </div>
+                <div class="input-col">
+                    </div>
+              </div>
+              <div class="input-group-row">
+                <div class="input-col input-contrast-box">
+                    <label for="usFromZone">From State/Timezone</label>
+                    <select id="usFromZone" class="input-field"></select>
+                </div>
+                <div class="input-col input-contrast-box">
+                    <label for="usToZone">To State/Timezone</label>
+                    <select id="usToZone" class="input-field"></select>
+                </div>
+              </div>
+              <div class="result-box us-result-box">
+                <div class="result-header">
+                  <span class="icon">•</span>
+                  <span class="label">US CONVERTED TIME</span>
+                </div>
+                <div class="result-main">
+                    <span id="usConvertedTime" class="time-lg">--:--</span>
+                    <span id="usConvertedDate" class="date-sm">Select US time zones</span>
+                </div>
+              </div>
+          </div>
       </div>
     </div>
     <div class="footer-links">
       <div id="currentTimes"></div>
     </div>
-    <div class="us-converter-section">
-      <h2 class="us-converter-title">United States Time Converter</h2>
-      <div class="us-card card">
-        <p class="us-subtitle">Convert between US States for scheduling.</p>
-        <div class="input-group-row">
-            <div class="input-col input-contrast-box">
-                <label for="usFromZone">From State/Timezone</label>
-                <select id="usFromZone" class="input-field"></select>
-            </div>
-            <div class="input-col input-contrast-box">
-                <label for="usToZone">To State/Timezone</label>
-                <select id="usToZone" class="input-field"></select>
-            </div>
-        </div>
-        <div class="result-box">
-            <div class="result-header">
-              <span class="icon">•</span>
-              <span class="label">US CONVERTED TIME</span>
-            </div>
-            <div class="result-main">
-                <span id="usConvertedTime" class="time-lg">--:--</span>
-                <span id="usConvertedDate" class="date-sm">Select US time zones</span>
-            </div>
-        </div>
-      </div>
-    </div>
   </div>
   <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
