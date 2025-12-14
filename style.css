@@ -11,13 +11,13 @@
 }
 /* --- LIGHT MODE Variables --- */
 body.light-mode {
-  --color-bg-primary: #f4f6f8; /* Bright White/Off-White */
-  --color-bg-secondary: #ffffff; /* Pure White Card */
+  --color-bg-primary: #f4f6f8;
+  --color-bg-secondary: #ffffff;
   --color-text-primary: #212121;
   --color-text-secondary: #666;
-  --color-accent: #4a42ff; /* Slightly brighter purple/blue */
+  --color-accent: #4a42ff;
   --color-border: #e0e0e0;
-  --shadow-main: 0 8px 24px rgba(0, 0, 0, 0.1); /* Lighter shadow */
+  --shadow-main: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 /* --- Global Styles --- */
 body {
@@ -31,11 +31,17 @@ body {
   padding: 60px 20px;
   margin: 0;
   line-height: 1.6;
-  transition: background-color 0.3s, color 0.3s; /* Smooth transition for theme change */
+  transition: background-color 0.3s, color 0.3s;
 }
 .container {
   width: 100%;
   max-width: 500px;
+}
+/* Ensure the logo area is blank */
+.logo {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: transparent; /* Makes text invisible if any accidentally remains */
 }
 /* --- Header & Theme Toggle --- */
 header {
@@ -48,11 +54,6 @@ header {
     align-items: center;
     margin-bottom: 8px;
 }
-.logo {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--color-accent);
-}
 .theme-toggle {
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
@@ -60,18 +61,28 @@ header {
     padding: 8px 12px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 0.9rem; /* Slightly smaller to accommodate text */
+    font-weight: 600;
     transition: background-color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 .theme-toggle:hover {
     background: var(--color-border);
 }
-/* Set specific icons based on the current mode */
+/* Set specific text and icon based on the current mode */
+.dark-mode .theme-toggle::before {
+    content: ":sunny:"; /* Icon */
+}
 .dark-mode .theme-toggle::after {
-    content: ":sunny:"; /* Sun icon for switching to light mode */
+    content: "Bright Mode"; /* Label */
+}
+.light-mode .theme-toggle::before {
+    content: ":crescent_moon:"; /* Icon */
 }
 .light-mode .theme-toggle::after {
-    content: ":crescent_moon:"; /* Moon icon for switching to dark mode */
+    content: "Dark Mode"; /* Label */
 }
 h1 {
   font-size: 2.2rem;
@@ -84,7 +95,7 @@ h1 {
   font-size: 0.9rem;
   margin-top: 5px;
 }
-/* --- Card & Input Styles --- */
+/* --- Card & Input Styles (No change, keeping original design) --- */
 .card {
   background: var(--color-bg-secondary);
   padding: 30px;
@@ -113,7 +124,7 @@ label {
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid var(--color-border);
-  background-color: var(--color-bg-primary); /* Inputs contrast with card */
+  background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
   font-size: 1rem;
   transition: border-color 0.2s, box-shadow 0.2s, background-color 0.3s;
@@ -127,7 +138,7 @@ label {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 30%, transparent);
 }
-/* --- Result Box UI/UX --- */
+/* --- Result Box UI/UX (No change, keeping original design) --- */
 .result-box {
   background-color: var(--color-bg-primary);
   padding: 25px;
@@ -143,7 +154,6 @@ label {
 }
 .result-header .icon {
   font-size: 1.2rem;
-  /* Ensure emojis scale and look good */
 }
 .result-header .label {
   font-size: 0.8rem;
@@ -195,7 +205,7 @@ label {
 .to-zone-select:hover {
     filter: brightness(1.1);
 }
-/* --- Current Times Display (Footer) --- */
+/* --- Current Times Display (Footer) (No change, keeping original design) --- */
 .footer-links {
   margin-top: 25px;
   text-align: center;
@@ -208,7 +218,7 @@ label {
   padding: 15px;
   background-color: var(--color-bg-secondary);
   border-radius: 8px;
-  box-shadow: var(--shadow-main); /* Apply a subtle shadow here too */
+  box-shadow: var(--shadow-main);
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 .current-time-item {
@@ -223,7 +233,7 @@ label {
   font-size: 1.1rem;
   transition: color 0.3s;
 }
-/* --- Media Queries (Unchanged but important for professionalism) --- */
+/* --- Media Queries (Unchanged) --- */
 @media (max-width: 600px) {
   .input-group-row {
     flex-direction: column;
@@ -245,7 +255,3 @@ label {
     gap: 10px;
   }
 }
-
-
-
-
