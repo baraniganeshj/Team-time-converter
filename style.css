@@ -1,3 +1,4 @@
+.
 /* --- Root Variables for Theming --- */
 :root {
   /* Default to Dark Mode Variables */
@@ -37,11 +38,10 @@ body {
   width: 100%;
   max-width: 500px;
 }
-/* Ensure the logo area is blank */
 .logo {
   font-size: 1.2rem;
   font-weight: 700;
-  color: transparent; /* Makes text invisible if any accidentally remains */
+  color: transparent;
 }
 /* --- Header & Theme Toggle --- */
 header {
@@ -61,29 +61,22 @@ header {
     padding: 8px 12px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 0.9rem; /* Slightly smaller to accommodate text */
+    font-size: 0.9rem;
     font-weight: 600;
     transition: background-color 0.2s, border-color 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    /* Removed display: flex and gap for simpler text only */
 }
 .theme-toggle:hover {
     background: var(--color-border);
 }
-/* Set specific text and icon based on the current mode */
-.dark-mode .theme-toggle::before {
-    content: ":sunny:"; /* Icon */
-}
+/* Theme labels (Text only - no emojis) */
 .dark-mode .theme-toggle::after {
-    content: "Bright Mode"; /* Label */
-}
-.light-mode .theme-toggle::before {
-    content: ":crescent_moon:"; /* Icon */
+    content: "Light Mode"; /* Clicking in Dark Mode switches to Light Mode */
 }
 .light-mode .theme-toggle::after {
-    content: "Dark Mode"; /* Label */
+    content: "Dark Mode"; /* Clicking in Light Mode switches to Dark Mode */
 }
+/* --- Other Styles (Unchanged) --- */
 h1 {
   font-size: 2.2rem;
   font-weight: 700;
@@ -95,7 +88,6 @@ h1 {
   font-size: 0.9rem;
   margin-top: 5px;
 }
-/* --- Card & Input Styles (No change, keeping original design) --- */
 .card {
   background: var(--color-bg-secondary);
   padding: 30px;
@@ -138,7 +130,6 @@ label {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 30%, transparent);
 }
-/* --- Result Box UI/UX (No change, keeping original design) --- */
 .result-box {
   background-color: var(--color-bg-primary);
   padding: 25px;
@@ -205,7 +196,6 @@ label {
 .to-zone-select:hover {
     filter: brightness(1.1);
 }
-/* --- Current Times Display (Footer) (No change, keeping original design) --- */
 .footer-links {
   margin-top: 25px;
   text-align: center;
@@ -233,7 +223,6 @@ label {
   font-size: 1.1rem;
   transition: color 0.3s;
 }
-/* --- Media Queries (Unchanged) --- */
 @media (max-width: 600px) {
   .input-group-row {
     flex-direction: column;
