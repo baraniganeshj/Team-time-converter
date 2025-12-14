@@ -1,42 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- ZONE DEFINITIONS ---
-    const globalZones = {
+    // --- UPDATED ZONES LIST ---
+    const zones = {
         "PST / PDT (Los Angeles)": "America/Los_Angeles",
         "EST / EDT (New York)": "America/New_York",
-        "IST (Chennai)": "Asia/Kolkata",
+        "IST (Chennai)": "Asia/Kolkata", // Renamed for clarity
         "UTC (Coordinated Universal Time)": "UTC",
         "GMT (London)": "Europe/London",
     };
-    const usZones = {
-        "Eastern Time (ET) - New York": "America/New_York",
-        "Central Time (CT) - Chicago": "America/Chicago",
-        "Mountain Time (MT) - Denver": "America/Denver",
-        "Pacific Time (PT) - Los Angeles": "America/Los_Angeles",
-        "Alaska Time (AKT) - Anchorage": "America/Anchorage",
-        "Hawaii Time (HT) - Honolulu": "Pacific/Honolulu",
-    };
-    // --- ELEMENT REFERENCES ---
+    const fromSelect = document.getElementById("fromZone");
+    const toSelect = document.getElementById("toZone");
+    const dateTimeInput = document.getElementById("dateTimeInput");
+    const convertedTime = document.getElementById("convertedTime");
+    const convertedDate = document.getElementById("convertedDate");
+    const toZoneDisplay = document.getElementById("toZoneDisplay");
     const currentTimesDiv = document.getElementById("currentTimes");
     const themeToggle = document.getElementById("themeToggle");
     const body = document.body;
-    // Global Converter Elements
-    const global = {
-        fromSelect: document.getElementById("fromZone"),
-        toSelect: document.getElementById("toZone"),
-        dateTimeInput: document.getElementById("dateTimeInput"),
-        convertedTime: document.getElementById("convertedTime"),
-        convertedDate: document.getElementById("convertedDate"),
-        toZoneDisplay: document.getElementById("toZoneDisplay")
-    };
-    // US Converter Elements (Now fully separate)
-    const us = {
-        fromSelect: document.getElementById("usFromZone"),
-        toSelect: document.getElementById("usToZone"),
-        dateTimeInput: document.getElementById("usDateTimeInput"), // NEW DEDICATED INPUT
-        convertedTime: document.getElementById("usConvertedTime"),
-        convertedDate: document.getElementById("usConvertedDate")
-    };
-    // --- THEME SWITCHER LOGIC (UNCHANGED) ---
+    // --- Theme Switcher Logic (UNCHANGED) ---
     function enableDarkMode() {
         body.classList.add('dark-mode');
         body.classList.remove('light-mode');
@@ -60,8 +40,25 @@ document.addEventListener('DOMContentLoaded', () => {
             enableDarkMode();
         }
     }
-    // --- UTILITY: Date Formatting ---
-    // Helper function to format date for input[type="datetime-local"]
+    themeToggle.addEventListener('click', () => {
+        if (body.classList.contains('dark-mode')) {
+            enableLightMode();
+        } else {
+            enableDarkMode();
+        }
+    });
+    // --- 1. Populate Selects ---
+    Object.keys(zones).forEach(zoneName => {
+        const timeZoneValue = zones[zoneName];
+        fromSelect.add(new Option(zoneName, timeZoneValue));
+        toSelect.add(new Option(zoneName, timeZoneValue));
+    });
+    // --- 2. Set Initial Values & Defaults ---
+    // Update defaults to use the new zone keys
+    fromSelect.value = zones["PST / PDT (Los Angeles)"];
+    toSelect.value = zones["IST (Chennai)"];
+    const now = new Date();
+    const initialFromZone = fromSelect.value;
     function formatToLocalInput(date, timeZone) {
         const year = new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: timeZone }).format(date);
         const month = new Intl.DateTimeFormat('en', { month: '2-digit', timeZone: timeZone }).format(date);
@@ -70,18 +67,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const minute = new Intl.DateTimeFormat('en', { minute: '2-digit', timeZone: timeZone }).format(date);
         return `${year}-${month}-${day}T${hour}:${minute}`;
     }
-    // --- CORE CONVERSION LOGIC (Reusable) ---
-    function performConversion(dateTimeLocal, fromZone, toZone, timeOutputEl, dateOutputEl) {
+    dateTimeInput.value = formatToLocalInput(now, initialFromZone);
+    // --- 3. Core Conversion Logic (UNCHANGED) ---
+    function convertTime() {
+        const dateTimeLocal = dateTimeInput.value;
+        const fromZone = fromSelect.value;
+        const toZone = toSelect.value;
+        const selectedToOption = toSelect.options[toSelect.selectedIndex].text;
+        toZoneDisplay.textContent = selectedToOption.replace(/\s*\(.*\)/, '');
         if (!dateTimeLocal) {
-             timeOutputEl.textContent = "--:--";
-             dateOutputEl.textContent = "Select date/time";
-             return;
+            convertedTime.textContent = "--:--";
+            convertedDate.textContent = "Please select a date and time.";
+            return;
         }
         const parts = dateTimeLocal.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
         if (!parts) return;
         const [_, year, month, day, hour, minute] = parts.map(Number);
         const fromDateString = `${month}/${day}/${year} ${hour}:${minute}:00`;
-        // Create the absolute moment in time (UTC epoch) anchored to the FROM zone
         const fromDate = new Date(
             new Date(fromDateString).toLocaleString("en-US", { timeZone: fromZone })
         );
@@ -93,77 +95,16 @@ document.addEventListener('DOMContentLoaded', () => {
             timeZone: toZone,
             year: 'numeric', month: 'short', day: '2-digit', weekday: 'short'
         });
-        timeOutputEl.textContent = timeFormatter.format(fromDate);
-        dateOutputEl.textContent = dateFormatter.format(fromDate);
+        convertedTime.textContent = timeFormatter.format(fromDate);
+        convertedDate.textContent = dateFormatter.format(fromDate);
     }
-    // --- GLOBAL CONVERTER MODULE ---
-    function initializeGlobalConverter() {
-        // 1. Populate Selects
-        Object.keys(globalZones).forEach(zoneName => {
-            const timeZoneValue = globalZones[zoneName];
-            global.fromSelect.add(new Option(zoneName, timeZoneValue));
-            global.toSelect.add(new Option(zoneName, timeZoneValue));
-        });
-        // 2. Set Initial Values & Date
-        global.fromSelect.value = globalZones["PST / PDT (Los Angeles)"];
-        global.toSelect.value = globalZones["IST (Chennai)"];
-        const now = new Date();
-        global.dateTimeInput.value = formatToLocalInput(now, global.fromSelect.value);
-        // 3. Conversion Function
-        function convertGlobalTime() {
-            const selectedToOption = global.toSelect.options[global.toSelect.selectedIndex].text;
-            global.toZoneDisplay.textContent = selectedToOption.replace(/\s*\(.*\)/, '');
-            performConversion(
-                global.dateTimeInput.value,
-                global.fromSelect.value,
-                global.toSelect.value,
-                global.convertedTime,
-                global.convertedDate
-            );
-        }
-        // 4. Event Listeners
-        document.querySelectorAll("#dateTimeInput, #fromZone, #toZone").forEach(el =>
-            el.addEventListener("change", convertGlobalTime)
-        );
-        return convertGlobalTime; // Return the function for initial execution
-    }
-    // --- US CONVERTER MODULE (FULLY INDEPENDENT) ---
-    function initializeUSConverter() {
-        // 1. Populate Selects
-        Object.keys(usZones).forEach(zoneName => {
-            const timeZoneValue = usZones[zoneName];
-            us.fromSelect.add(new Option(zoneName, timeZoneValue));
-            us.toSelect.add(new Option(zoneName, timeZoneValue));
-        });
-        // 2. Set Initial Values & Date
-        us.fromSelect.value = usZones["Eastern Time (ET) - New York"];
-        us.toSelect.value = usZones["Pacific Time (PT) - Los Angeles"];
-        const now = new Date();
-        // Uses the US 'From' zone to initialize its independent date picker
-        us.dateTimeInput.value = formatToLocalInput(now, us.fromSelect.value);
-        // 3. Conversion Function
-        function convertUSTime() {
-            // Note: Does NOT rely on global.dateTimeInput
-            performConversion(
-                us.dateTimeInput.value,
-                us.fromSelect.value,
-                us.toSelect.value,
-                us.convertedTime,
-                us.convertedDate
-            );
-        }
-        // 4. Event Listeners
-        document.querySelectorAll("#usDateTimeInput, #usFromZone, #usToZone").forEach(el =>
-            el.addEventListener("change", convertUSTime)
-        );
-        return convertUSTime; // Return the function for initial execution
-    }
-    // --- LIVE TICKER (UNCHANGED) ---
+    // --- 4. Current Time Display (Live Tickers) ---
     function updateCurrentTimes() {
+        // --- UPDATED ZONES FOR TICKER ---
         const zonesToShow = {
-            "PST": globalZones["PST / PDT (Los Angeles)"],
-            "IST": globalZones["IST (Chennai)"],
-            "UTC": globalZones["UTC (Coordinated Universal Time)"]
+            "PST": zones["PST / PDT (Los Angeles)"],
+            "IST": zones["IST (Chennai)"],
+            "UTC": zones["UTC (Coordinated Universal Time)"]
         };
         currentTimesDiv.innerHTML = '';
         const now = new Date();
@@ -182,19 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
             currentTimesDiv.appendChild(item);
         });
     }
-    // --- INITIALIZATION ---
+    // --- 5. Event Listeners and Initialization ---
+    document.querySelectorAll(".input-field, .to-zone-select").forEach(el =>
+        el.addEventListener("change", convertTime)
+    );
+    // Initialize
     initializeTheme();
-    themeToggle.addEventListener('click', () => {
-        if (body.classList.contains('dark-mode')) {
-            enableLightMode();
-        } else {
-            enableDarkMode();
-        }
-    });
-    const runGlobal = initializeGlobalConverter();
-    const runUS = initializeUSConverter();
-    runGlobal();
-    runUS();
+    convertTime();
     updateCurrentTimes();
     setInterval(updateCurrentTimes, 1000);
 });
