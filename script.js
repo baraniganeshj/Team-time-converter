@@ -1,12 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- UPDATED ZONES LIST ---
     const zones = {
         "PST / PDT (Los Angeles)": "America/Los_Angeles",
         "EST / EDT (New York)": "America/New_York",
-        "IST (Kolkata)": "Asia/Kolkata",
-        "CET / CEST (Berlin)": "Europe/Berlin",
-        "GMT / BST (London)": "Europe/London",
-        "JST (Tokyo)": "Asia/Tokyo",
+        "IST (Chennai)": "Asia/Kolkata", // Renamed for clarity
         "UTC (Coordinated Universal Time)": "UTC",
+        "GMT (London)": "Europe/London",
     };
     const fromSelect = document.getElementById("fromZone");
     const toSelect = document.getElementById("toZone");
@@ -17,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentTimesDiv = document.getElementById("currentTimes");
     const themeToggle = document.getElementById("themeToggle");
     const body = document.body;
-    // --- Theme Switcher Logic ---
+    // --- Theme Switcher Logic (UNCHANGED) ---
     function enableDarkMode() {
         body.classList.add('dark-mode');
         body.classList.remove('light-mode');
@@ -55,8 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
         toSelect.add(new Option(zoneName, timeZoneValue));
     });
     // --- 2. Set Initial Values & Defaults ---
+    // Update defaults to use the new zone keys
     fromSelect.value = zones["PST / PDT (Los Angeles)"];
-    toSelect.value = zones["IST (Kolkata)"];
+    toSelect.value = zones["IST (Chennai)"];
     const now = new Date();
     const initialFromZone = fromSelect.value;
     function formatToLocalInput(date, timeZone) {
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${year}-${month}-${day}T${hour}:${minute}`;
     }
     dateTimeInput.value = formatToLocalInput(now, initialFromZone);
-    // --- 3. Core Conversion Logic ---
+    // --- 3. Core Conversion Logic (UNCHANGED) ---
     function convertTime() {
         const dateTimeLocal = dateTimeInput.value;
         const fromZone = fromSelect.value;
@@ -100,9 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // --- 4. Current Time Display (Live Tickers) ---
     function updateCurrentTimes() {
+        // --- UPDATED ZONES FOR TICKER ---
         const zonesToShow = {
             "PST": zones["PST / PDT (Los Angeles)"],
-            "IST": zones["IST (Kolkata)"],
+            "IST": zones["IST (Chennai)"],
             "UTC": zones["UTC (Coordinated Universal Time)"]
         };
         currentTimesDiv.innerHTML = '';
