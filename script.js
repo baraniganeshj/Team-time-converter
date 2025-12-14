@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentTimesDiv = document.getElementById("currentTimes");
     const themeToggle = document.getElementById("themeToggle");
     const body = document.body;
-    // --- Theme Switcher Logic (New Feature) ---
+    // --- Theme Switcher Logic ---
     function enableDarkMode() {
         body.classList.add('dark-mode');
         body.classList.remove('light-mode');
@@ -29,18 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('theme', 'light');
     }
     function initializeTheme() {
-        // 1. Check user's stored preference
         const storedTheme = localStorage.getItem('theme');
         if (storedTheme === 'dark') {
             enableDarkMode();
         } else if (storedTheme === 'light') {
             enableLightMode();
         }
-        // 2. If no stored preference, check OS preference (high-level engineering detail)
         else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             enableDarkMode();
         } else {
-            // Default to dark mode (as requested by previous output)
             enableDarkMode();
         }
     }
@@ -60,12 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. Set Initial Values & Defaults ---
     fromSelect.value = zones["PST / PDT (Los Angeles)"];
     toSelect.value = zones["IST (Kolkata)"];
-    // Set default date/time to now in the 'From' zone
     const now = new Date();
     const initialFromZone = fromSelect.value;
-    // Helper function to format date for input[type="datetime-local"]
     function formatToLocalInput(date, timeZone) {
-        // This is a complex step, better to use multiple Intl calls to get the exact parts
         const year = new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: timeZone }).format(date);
         const month = new Intl.DateTimeFormat('en', { month: '2-digit', timeZone: timeZone }).format(date);
         const day = new Intl.DateTimeFormat('en', { day: '2-digit', timeZone: timeZone }).format(date);
@@ -86,17 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
             convertedDate.textContent = "Please select a date and time.";
             return;
         }
-        // Parse the input date string and anchor it to the FROM zone
         const parts = dateTimeLocal.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
         if (!parts) return;
         const [_, year, month, day, hour, minute] = parts.map(Number);
         const fromDateString = `${month}/${day}/${year} ${hour}:${minute}:00`;
-        // Create the absolute moment in time (UTC epoch)
-        // This trick is the best compromise for reliable cross-browser/timezone parsing.
         const fromDate = new Date(
             new Date(fromDateString).toLocaleString("en-US", { timeZone: fromZone })
         );
-        // Convert the absolute moment (fromDate) to the target zone formats
         const timeFormatter = new Intl.DateTimeFormat('en-US', {
             timeZone: toZone,
             hour: '2-digit', minute: '2-digit', hour12: true
