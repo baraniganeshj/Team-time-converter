@@ -1,6 +1,4 @@
-/* --- Root Variables for Theming --- */
 :root {
-  /* Default to Dark Mode Variables */
   --color-bg-primary: #1e1e2f;
   --color-bg-secondary: #27293d;
   --color-text-primary: #e6e6fa;
@@ -9,7 +7,6 @@
   --color-border: #3c3f56;
   --shadow-main: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
-/* --- LIGHT MODE Variables --- */
 body.light-mode {
   --color-bg-primary: #f4f6f8;
   --color-bg-secondary: #ffffff;
@@ -19,7 +16,6 @@ body.light-mode {
   --color-border: #e0e0e0;
   --shadow-main: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
-/* --- Global Styles --- */
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--color-bg-primary);
@@ -28,7 +24,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  padding: 60px 20px;
+  padding: 40px 20px;
   margin: 0;
   line-height: 1.6;
   transition: background-color 0.3s, color 0.3s;
@@ -37,12 +33,6 @@ body {
   width: 100%;
   max-width: 500px;
 }
-.logo {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: transparent;
-}
-/* --- Header & Theme Toggle --- */
 header {
   text-align: center;
   margin-bottom: 30px;
@@ -53,29 +43,6 @@ header {
     align-items: center;
     margin-bottom: 8px;
 }
-.theme-toggle {
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-primary);
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: background-color 0.2s, border-color 0.2s;
-    /* Removed display: flex and gap for simpler text only */
-}
-.theme-toggle:hover {
-    background: var(--color-border);
-}
-/* Theme labels (Text only - no emojis) */
-.dark-mode .theme-toggle::after {
-    content: "Light Mode"; /* Clicking in Dark Mode switches to Light Mode */
-}
-.light-mode .theme-toggle::after {
-    content: "Dark Mode"; /* Clicking in Light Mode switches to Dark Mode */
-}
-/* --- Other Styles (Unchanged) --- */
 h1 {
   font-size: 2.2rem;
   font-weight: 700;
@@ -124,17 +91,11 @@ label {
 .light-mode .input-field {
     background-color: #fcfcfc;
 }
-.input-field:focus {
-  outline: none;
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 30%, transparent);
-}
 .result-box {
   background-color: var(--color-bg-primary);
   padding: 25px;
   border-radius: 12px;
   border-left: 5px solid var(--color-accent);
-  transition: background-color 0.3s;
 }
 .result-header {
   display: flex;
@@ -144,6 +105,7 @@ label {
 }
 .result-header .icon {
   font-size: 1.2rem;
+  color: var(--color-accent);
 }
 .result-header .label {
   font-size: 0.8rem;
@@ -159,13 +121,11 @@ label {
 .time-lg {
   font-size: 2.8rem;
   font-weight: 700;
-  color: var(--color-text-primary);
   line-height: 1;
 }
 .date-sm {
   font-size: 1rem;
   color: var(--color-text-secondary);
-  font-weight: 400;
   text-align: right;
 }
 .zone-display {
@@ -189,16 +149,10 @@ label {
   border: none;
   font-weight: 600;
   cursor: pointer;
-  max-width: 150px;
-  transition: background-color 0.2s;
-}
-.to-zone-select:hover {
-    filter: brightness(1.1);
 }
 .footer-links {
   margin-top: 25px;
   text-align: center;
-  font-size: 0.8rem;
 }
 #currentTimes {
   display: flex;
@@ -208,38 +162,37 @@ label {
   background-color: var(--color-bg-secondary);
   border-radius: 8px;
   box-shadow: var(--shadow-main);
-  transition: background-color 0.3s, box-shadow 0.3s;
 }
 .current-time-item {
   color: var(--color-text-secondary);
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 .current-time-value {
   font-weight: 700;
   color: var(--color-text-primary);
   font-size: 1.1rem;
-  transition: color 0.3s;
 }
+.theme-wrapper {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+}
+.theme-toggle {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.dark-mode .theme-toggle::after { content: "Light Mode"; }
+.light-mode .theme-toggle::after { content: "Dark Mode"; }
 @media (max-width: 600px) {
-  .input-group-row {
-    flex-direction: column;
-    gap: 15px;
-  }
-  .result-main {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .time-lg {
-    font-size: 2.5rem;
-  }
-  .date-sm {
-    text-align: left;
-    margin-top: -10px;
-  }
-  #currentTimes {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
+  .input-group-row { flex-direction: column; gap: 10px; }
+  .result-main { flex-direction: column; }
+  .time-lg { font-size: 2.2rem; }
+  #currentTimes { flex-wrap: wrap; }
 }
