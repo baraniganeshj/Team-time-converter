@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- UPDATED ZONES LIST ---
     const zones = {
         "PST / PDT (Los Angeles)": "America/Los_Angeles",
         "EST / EDT (New York)": "America/New_York",
-        "IST (Chennai)": "Asia/Kolkata", // Renamed for clarity
+        "IST (Chennai)": "Asia/Kolkata",
         "UTC (Coordinated Universal Time)": "UTC",
         "GMT (London)": "Europe/London",
     };
@@ -16,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentTimesDiv = document.getElementById("currentTimes");
     const themeToggle = document.getElementById("themeToggle");
     const body = document.body;
-    // --- Theme Switcher Logic (UNCHANGED) ---
+    // --- Theme Logic ---
     function enableDarkMode() {
         body.classList.add('dark-mode');
         body.classList.remove('light-mode');
@@ -27,109 +26,65 @@ document.addEventListener('DOMContentLoaded', () => {
         body.classList.remove('dark-mode');
         localStorage.setItem('theme', 'light');
     }
-    function initializeTheme() {
-        const storedTheme = localStorage.getItem('theme');
-        if (storedTheme === 'dark') {
-            enableDarkMode();
-        } else if (storedTheme === 'light') {
-            enableLightMode();
-        }
-        else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            enableDarkMode();
-        } else {
-            enableDarkMode();
-        }
-    }
+    if (localStorage.getItem('theme') === 'light') enableLightMode();
     themeToggle.addEventListener('click', () => {
-        if (body.classList.contains('dark-mode')) {
-            enableLightMode();
-        } else {
-            enableDarkMode();
-        }
+        if (body.classList.contains('dark-mode')) enableLightMode();
+        else enableDarkMode();
     });
-    // --- 1. Populate Selects ---
-    Object.keys(zones).forEach(zoneName => {
-        const timeZoneValue = zones[zoneName];
-        fromSelect.add(new Option(zoneName, timeZoneValue));
-        toSelect.add(new Option(zoneName, timeZoneValue));
+    // --- Populate Zones ---
+    Object.keys(zones).forEach(name => {
+        fromSelect.add(new Option(name, zones[name]));
+        toSelect.add(new Option(name, zones[name]));
     });
-    // --- 2. Set Initial Values & Defaults ---
-    // Update defaults to use the new zone keys
+    // --- Defaults ---
     fromSelect.value = zones["PST / PDT (Los Angeles)"];
     toSelect.value = zones["IST (Chennai)"];
-    const now = new Date();
-    const initialFromZone = fromSelect.value;
-    function formatToLocalInput(date, timeZone) {
-        const year = new Intl.DateTimeFormat('en', { year: 'numeric', timeZone: timeZone }).format(date);
-        const month = new Intl.DateTimeFormat('en', { month: '2-digit', timeZone: timeZone }).format(date);
-        const day = new Intl.DateTimeFormat('en', { day: '2-digit', timeZone: timeZone }).format(date);
-        const hour = new Intl.DateTimeFormat('en', { hour: '2-digit', hourCycle: 'h23', timeZone: timeZone }).format(date);
-        const minute = new Intl.DateTimeFormat('en', { minute: '2-digit', timeZone: timeZone }).format(date);
-        return `${year}-${month}-${day}T${hour}:${minute}`;
+    // Set default input time to NOW in the 'From' zone
+    function setInitialTime() {
+        const now = new Date();
+        const f = (o) => new Intl.DateTimeFormat('en', { ...o, timeZone: fromSelect.value }).format(now);
+        dateTimeInput.value = `${f({year:'numeric'})}-${f({month:'2-digit'})}-${f({day:'2-digit'})}T${f({hour:'2-digit', hourCycle:'h23'})}:${f({minute:'2-digit'})}`;
     }
-    dateTimeInput.value = formatToLocalInput(now, initialFromZone);
-    // --- 3. Core Conversion Logic (UNCHANGED) ---
+    setInitialTime();
+    // --- Conversion Engine ---
     function convertTime() {
-        const dateTimeLocal = dateTimeInput.value;
+        const dateTimeValue = dateTimeInput.value;
         const fromZone = fromSelect.value;
         const toZone = toSelect.value;
-        const selectedToOption = toSelect.options[toSelect.selectedIndex].text;
-        toZoneDisplay.textContent = selectedToOption.replace(/\s*\(.*\)/, '');
-        if (!dateTimeLocal) {
-            convertedTime.textContent = "--:--";
-            convertedDate.textContent = "Please select a date and time.";
-            return;
-        }
-        const parts = dateTimeLocal.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-        if (!parts) return;
-        const [_, year, month, day, hour, minute] = parts.map(Number);
-        const fromDateString = `${month}/${day}/${year} ${hour}:${minute}:00`;
-        const fromDate = new Date(
-            new Date(fromDateString).toLocaleString("en-US", { timeZone: fromZone })
-        );
-        const timeFormatter = new Intl.DateTimeFormat('en-US', {
-            timeZone: toZone,
-            hour: '2-digit', minute: '2-digit', hour12: true
-        });
-        const dateFormatter = new Intl.DateTimeFormat('en-US', {
-            timeZone: toZone,
-            year: 'numeric', month: 'short', day: '2-digit', weekday: 'short'
-        });
-        convertedTime.textContent = timeFormatter.format(fromDate);
-        convertedDate.textContent = dateFormatter.format(fromDate);
+        toZoneDisplay.textContent = toSelect.options[toSelect.selectedIndex].text.split('(')[0].trim();
+        if (!dateTimeValue) return;
+        // Parse input parts
+        const [datePart, timePart] = dateTimeValue.split('T');
+        const [year, month, day] = datePart.split('-');
+        const [hours, minutes] = timePart.split(':');
+        // Create date in local system time first
+        const date = new Date(year, month - 1, day, hours, minutes);
+        // Calculate the difference between UTC and the 'From' timezone
+        const utcStr = date.toLocaleString('en-US', { timeZone: 'UTC' });
+        const fromStr = date.toLocaleString('en-US', { timeZone: fromZone });
+        const utcDate = new Date(utcStr);
+        const fromTzDate = new Date(fromStr);
+        const offset = utcDate.getTime() - fromTzDate.getTime();
+        const actualUtcTime = date.getTime() + offset;
+        const finalMoment = new Date(actualUtcTime);
+        // Format for 'To' Zone
+        const timeFmt = new Intl.DateTimeFormat('en-US', { timeZone: toZone, hour: '2-digit', minute: '2-digit', hour12: true });
+        const dateFmt = new Intl.DateTimeFormat('en-US', { timeZone: toZone, year: 'numeric', month: 'short', day: '2-digit', weekday: 'short' });
+        convertedTime.textContent = timeFmt.format(finalMoment);
+        convertedDate.textContent = dateFmt.format(finalMoment);
     }
-    // --- 4. Current Time Display (Live Tickers) ---
-    function updateCurrentTimes() {
-        // --- UPDATED ZONES FOR TICKER ---
-        const zonesToShow = {
-            "PST": zones["PST / PDT (Los Angeles)"],
-            "IST": zones["IST (Chennai)"],
-            "UTC": zones["UTC (Coordinated Universal Time)"]
-        };
+    // --- Tickers ---
+    function updateTickers() {
+        const tickerZones = { "PST": zones["PST / PDT (Los Angeles)"], "IST": zones["IST (Chennai)"], "UTC": "UTC" };
         currentTimesDiv.innerHTML = '';
         const now = new Date();
-        Object.keys(zonesToShow).forEach(key => {
-            const timeZone = zonesToShow[key];
-            const time = new Intl.DateTimeFormat('en-US', {
-                hour: '2-digit', minute: '2-digit', second: '2-digit',
-                timeZone: timeZone, hour12: false
-            }).format(now);
-            const item = document.createElement('div');
-            item.className = 'current-time-item';
-            item.innerHTML = `
-                <span>${key}</span>
-                <span class="current-time-value">${time}</span>
-            `;
-            currentTimesDiv.appendChild(item);
+        Object.keys(tickerZones).forEach(key => {
+            const time = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: tickerZones[key], hour12: false }).format(now);
+            currentTimesDiv.innerHTML += `<div class="current-time-item"><span>${key}</span><span class="current-time-value">${time}</span></div>`;
         });
     }
-    // --- 5. Event Listeners and Initialization ---
-    document.querySelectorAll(".input-field, .to-zone-select").forEach(el =>
-        el.addEventListener("change", convertTime)
-    );
-    // Initialize
-    initializeTheme();
+    [fromSelect, toSelect, dateTimeInput].forEach(el => el.addEventListener("change", convertTime));
     convertTime();
-    updateCurrentTimes();
-    setInterval(updateCurrentTimes, 1000);
+    updateTickers();
+    setInterval(updateTickers, 1000);
 });
